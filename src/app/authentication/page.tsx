@@ -1,24 +1,24 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { SignInForm } from "./_components/SignInForm";
-import { SignUpForm } from "./_components/SignUpForm";
+import { SignInForm } from "./_components/sign-in-form";
+import { SignUpForm } from "./_components/sign-up-form";
 
 export default async function AuthenticationPage() {
-    return (
-        <main>
-            <Tabs defaultValue="signIn">
-                <TabsList>
-                    <TabsTrigger value="signIn">Entrar</TabsTrigger>
-                    <TabsTrigger value="signUp">Registrar-se</TabsTrigger>
-                </TabsList>
+  return (
+    <main>
+      <Tabs defaultValue="signIn">
+        <TabsList>
+          <TabsTrigger value="signIn">Entrar</TabsTrigger>
+          <TabsTrigger value="signUp">Registrar-se</TabsTrigger>
+        </TabsList>
 
-                 <TabsContent value="signIn">
-                    <SignInForm />
-                 </TabsContent>
+        <TabsContent value="signIn">
+          <SignInForm />
+        </TabsContent>
 
-                 <TabsContent value="signUp">
-                    <SignUpForm />
-                 </TabsContent>
-            </Tabs>
-        </main>
-    )
+        <TabsContent value="signUp">
+          <SignUpForm />
+        </TabsContent>
+      </Tabs>
+    </main>
+  );
 }
