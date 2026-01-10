@@ -14,28 +14,35 @@ datasource db {
 }
 
 model User {
-  id Int @id @default(autoincrement())
-  fullName String
-  email String @unique
+  id           Int    @id @default(autoincrement())
+  fullName     String
+  email        String @unique
   passwordHash String
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  projects Project[]
-  tasks Task[]
-  assignedTasks Task[] @relation("AssignedTasks")
+  projects      Project[]
+  tasks         Task[]
+  assignedTasks Task[]    @relation("AssignedTasks")
+
+  name          String
+  emailVerified Boolean   @default(false)
+  image         String?
+
+  sessions      Session[]
+  accounts      Account[]
 
   @@map("users")
 }
 
 model Project {
-  id Int @id @default(autoincrement())
-  name String
+  id          Int     @id @default(autoincrement())
+  name        String
   description String?
 
   ownerId Int
-  owner User @relation(fields: [ownerId], references: [id])
+  owner   User @relation(fields: [ownerId], references: [id])
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -46,18 +53,19 @@ model Project {
 }
 
 model TaskPriority {
-  id Int @id @default(autoincrement())
+  id    Int    @id @default(autoincrement())
   level String @unique
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   tasks Task[]
+
   @@map("task_priority")
 }
 
 model TaskStatus {
-  id Int @id @default(autoincrement())
+  id   Int    @id @default(autoincrement())
   name String @unique
 
   createdAt DateTime @default(now())
@@ -69,26 +77,26 @@ model TaskStatus {
 }
 
 model Task {
-  id Int @id @default(autoincrement())
-  title String @unique
+  id          Int     @id @default(autoincrement())
+  title       String  @unique
   description String?
   isCompleted Boolean @default(false)
-  index Int
+  index       Int
 
   projectId Int
-  project Project @relation(fields: [projectId], references: [id])
+  project   Project @relation(fields: [projectId], references: [id])
 
   priorityId Int
-  priority TaskPriority @relation(fields: [priorityId], references: [id])
+  priority   TaskPriority @relation(fields: [priorityId], references: [id])
 
   taskStatusId Int
-  status TaskStatus @relation(fields: [taskStatusId], references: [id])
+  status       TaskStatus @relation(fields: [taskStatusId], references: [id])
 
   createdByUserId Int
-  createdBy User @relation(fields: [createdByUserId], references: [id])
+  createdBy       User @relation(fields: [createdByUserId], references: [id])
 
   assignedToUserId Int?
-  assignedTo User? @relation("AssignedTasks", fields: [assignedToUserId], references: [id])
+  assignedTo       User? @relation("AssignedTasks", fields: [assignedToUserId], references: [id])
 
   deliveryDate DateTime?
 
@@ -96,4 +104,52 @@ model Task {
   updatedAt DateTime @updatedAt
 
   @@map("tasks")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                Int
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }
