@@ -14,21 +14,22 @@ datasource db {
 }
 
 model User {
-  id           String    @id @default(cuid())
-  name     String
-  email        String @unique
-  emailVerified Boolean   @default(false)
+  id            String  @id @default(cuid())
+  name          String
+  email         String  @unique
+  emailVerified Boolean @default(false)
   image         String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  projects      Project[]
-  tasks         Task[]
-  assignedTasks Task[]    @relation("AssignedTasks")
+  ownedProjects     Project[]     @relation("OwnedProjects")
+  projectMembership ProjectUser[] @relation("ProjectUsers")
+  assignedTasks     Task[]        @relation("AssignedTasks")
 
-  sessions      Session[]
-  accounts      Account[]
+  sessions Session[]
+  accounts Account[]
+  tasks    Task[]
 
   @@map("users")
 }
@@ -39,7 +40,9 @@ model Project {
   description String?
 
   ownerId String
-  owner   User @relation(fields: [ownerId], references: [id])
+  owner   User   @relation("OwnedProjects", fields: [ownerId], references: [id], onDelete: Cascade)
+
+  members ProjectUser[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -47,6 +50,21 @@ model Project {
   tasks Task[]
 
   @@map("projects")
+}
+
+model ProjectUser {
+  id Int @id @default(autoincrement())
+
+  projectId Int
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  userId String
+  user   User   @relation("ProjectUsers", fields: [userId], references: [id], onDelete: Cascade)
+
+  joinedAt DateTime @default(now())
+
+  @@unique([projectId, userId])
+  @@map("project_users")
 }
 
 model TaskPriority {
@@ -90,10 +108,10 @@ model Task {
   status       TaskStatus @relation(fields: [taskStatusId], references: [id])
 
   createdByUserId String
-  createdBy       User @relation(fields: [createdByUserId], references: [id])
+  createdBy       User   @relation(fields: [createdByUserId], references: [id])
 
   assignedToUserId String?
-  assignedTo       User? @relation("AssignedTasks", fields: [assignedToUserId], references: [id])
+  assignedTo       User?   @relation("AssignedTasks", fields: [assignedToUserId], references: [id])
 
   deliveryDate DateTime?
 
