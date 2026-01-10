@@ -14,10 +14,11 @@ datasource db {
 }
 
 model User {
-  id           Int    @id @default(autoincrement())
-  fullName     String
+  id           String    @id @default(cuid())
+  name     String
   email        String @unique
-  passwordHash String
+  emailVerified Boolean   @default(false)
+  image         String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -25,10 +26,6 @@ model User {
   projects      Project[]
   tasks         Task[]
   assignedTasks Task[]    @relation("AssignedTasks")
-
-  name          String
-  emailVerified Boolean   @default(false)
-  image         String?
 
   sessions      Session[]
   accounts      Account[]
@@ -41,7 +38,7 @@ model Project {
   name        String
   description String?
 
-  ownerId Int
+  ownerId String
   owner   User @relation(fields: [ownerId], references: [id])
 
   createdAt DateTime @default(now())
@@ -92,10 +89,10 @@ model Task {
   taskStatusId Int
   status       TaskStatus @relation(fields: [taskStatusId], references: [id])
 
-  createdByUserId Int
+  createdByUserId String
   createdBy       User @relation(fields: [createdByUserId], references: [id])
 
-  assignedToUserId Int?
+  assignedToUserId String?
   assignedTo       User? @relation("AssignedTasks", fields: [assignedToUserId], references: [id])
 
   deliveryDate DateTime?
@@ -114,7 +111,7 @@ model Session {
   updatedAt DateTime @updatedAt
   ipAddress String?
   userAgent String?
-  userId    Int
+  userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
@@ -126,7 +123,7 @@ model Account {
   id                    String    @id
   accountId             String
   providerId            String
-  userId                Int
+  userId                String
   user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
