@@ -1,0 +1,99 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id Int @id @default(autoincrement())
+  fullName String
+  email String @unique
+  passwordHash String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  projects Project[]
+  tasks Task[]
+  assignedTasks Task[] @relation("AssignedTasks")
+
+  @@map("users")
+}
+
+model Project {
+  id Int @id @default(autoincrement())
+  name String
+  description String?
+
+  ownerId Int
+  owner User @relation(fields: [ownerId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tasks Task[]
+
+  @@map("projects")
+}
+
+model TaskPriority {
+  id Int @id @default(autoincrement())
+  level String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tasks Task[]
+  @@map("task_priority")
+}
+
+model TaskStatus {
+  id Int @id @default(autoincrement())
+  name String @unique
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  tasks Task[]
+
+  @@map("task_status")
+}
+
+model Task {
+  id Int @id @default(autoincrement())
+  title String @unique
+  description String?
+  isCompleted Boolean @default(false)
+  index Int
+
+  projectId Int
+  project Project @relation(fields: [projectId], references: [id])
+
+  priorityId Int
+  priority TaskPriority @relation(fields: [priorityId], references: [id])
+
+  taskStatusId Int
+  status TaskStatus @relation(fields: [taskStatusId], references: [id])
+
+  createdByUserId Int
+  createdBy User @relation(fields: [createdByUserId], references: [id])
+
+  assignedToUserId Int?
+  assignedTo User? @relation("AssignedTasks", fields: [assignedToUserId], references: [id])
+
+  deliveryDate DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("tasks")
+}
