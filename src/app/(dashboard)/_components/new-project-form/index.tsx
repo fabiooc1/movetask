@@ -14,6 +14,7 @@ import { RequiredFormField } from "@/components/required-form-field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { createProject } from "@/actions/projects/create-project";
+import { MemberSelect } from "@/components/member-select";
 
 interface NewProjectFormProps {
   onSuccess?: () => void;
@@ -24,7 +25,7 @@ export function NewProjectForm({ onSuccess }: NewProjectFormProps) {
     resolver: zodResolver(newProjectFormSchema),
     defaultValues: {
       name: "",
-      description: "",
+      description: undefined,
       membersIds: [],
     },
   });
@@ -87,7 +88,17 @@ export function NewProjectForm({ onSuccess }: NewProjectFormProps) {
           )}
         />
 
-        {/* TODO: Pensar em alguma forma se o usuário selecionar os usuários do sistema para adicionar ao projeto */}
+        <FormField
+          control={form.control}
+          name="membersIds"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Membros do projeto</FormLabel>
+              <MemberSelect {...field} />
+              <FormMessage />
+            </FormItem>
+          )}
+        />
       </Form>
 
       <div className="flex justify-end">
