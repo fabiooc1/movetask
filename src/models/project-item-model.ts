@@ -1,9 +1,4 @@
-export interface ProjectItemMemberModel {
-  user: {
-    id: string;
-    name: string;
-  };
-}
+import { ProjectMemberModel } from "./project-member-model";
 
 export interface ProjectItemModel {
   id: number;
@@ -14,5 +9,5 @@ export interface ProjectItemModel {
   ownerId: string;
   createdAt: Date;
   updatedAt: Date;
-  members: ProjectItemMemberModel[];
+  members: ProjectMemberModel[];
 }
