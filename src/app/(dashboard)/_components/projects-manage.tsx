@@ -12,6 +12,7 @@ import { ProjectItemModel } from "@/models/project-item-model";
 import { SquareIcon } from "lucide-react";
 import { NewProjectButton } from "./new-project-button";
 import { ProjectCard } from "./project-card";
+import { ProjectRow } from "./project-row";
 
 export type AvailableViewModes = "list" | "grid";
 
@@ -51,11 +52,12 @@ export function ProjectsManage({ viewMode, projects }: ProjectsManageProps) {
   return (
     <div className={containerStyle}>
       {projects.map((p) => {
-        if (viewMode === "grid") {
-          return <ProjectCard key={p.id} project={p} />;
+        switch (viewMode) {
+          case "grid":
+            return <ProjectCard key={p.id} project={p} />;
+          case "list":
+            return <ProjectRow key={p.id} project={p} />;
         }
-
-        return <p key={p.id}>{p.name}</p>;
       })}
     </div>
   );
