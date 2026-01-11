@@ -15,7 +15,7 @@ interface TaskStatusSelectProps {
   onChange?: (value: string) => void;
 }
 
-export function TaskStatusSelect({}: TaskStatusSelectProps) {
+export function TaskStatusSelect({ value, onChange }: TaskStatusSelectProps) {
   const { isLoading, data: status } = useGetTaskStatus();
 
   if (isLoading) {
@@ -26,10 +26,8 @@ export function TaskStatusSelect({}: TaskStatusSelectProps) {
     return null;
   }
 
-  console.log(status);
-
   return (
-    <Select>
+    <Select value={value} onValueChange={onChange}>
       <SelectTrigger className="w-full">
         <SelectValue placeholder="Selecione o status da tarefa" />
       </SelectTrigger>
