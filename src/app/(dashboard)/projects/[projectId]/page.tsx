@@ -1,8 +1,9 @@
 import { getProjectById } from "@/actions/projects/get-project-by-id";
 import { BackButton } from "@/components/back-button";
 import { NewTaskButton } from "../../_components/new-task-button";
-import { getTaskStatus } from "@/actions/tasks/get-task-status";
+import { getProjectTasksByStatus } from "@/actions/tasks/get-project-tasks-by-status";
 import { TaskBoard } from "../../_components/task-board";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 
 export default async function ProjectPage(
   props: PageProps<"/projects/[projectId]">
@@ -10,7 +11,7 @@ export default async function ProjectPage(
   const params = await props.params;
   const projectId = Number(params.projectId);
   const project = await getProjectById(projectId);
-  const taskStatus = await getTaskStatus();
+  const taskStatus = await getProjectTasksByStatus(projectId);
 
   return (
     <div className="space-y-6">
@@ -26,14 +27,18 @@ export default async function ProjectPage(
           </div>
         </div>
 
-        <NewTaskButton />
+        <NewTaskButton projectId={projectId} />
       </div>
 
-      <div className="flex gap-4 justify-between">
-        {taskStatus.map((ts) => (
-          <TaskBoard key={ts.id} status={ts} />
-        ))}
-      </div>
+      <ScrollArea className="w-full">
+        <div className="flex gap-6">
+          {taskStatus.map((ts) => (
+            <TaskBoard projectId={projectId} key={ts.id} status={ts} />
+          ))}
+        </div>
+
+        <ScrollBar orientation="horizontal" />
+      </ScrollArea>
     </div>
   );
 }
