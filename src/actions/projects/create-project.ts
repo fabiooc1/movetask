@@ -6,12 +6,8 @@ import z from "zod";
 import { UnathorizedError } from "../erros/UnathorizedError";
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
-
-const createProjectSchema = z.object({
-  name: z.string().min(3).max(100),
-  description: z.string().max(500).optional(),
-  membersIds: z.array(z.uuid()).optional(),
-});
+import { ConflictError } from "../erros/ConflictError";
+import { createProjectSchema } from "./create-project.schema";
 
 type CreateProjectProps = z.infer<typeof createProjectSchema>;
 
@@ -26,6 +22,18 @@ export async function createProject(dto: CreateProjectProps): Promise<void> {
 
   const { name, description, membersIds } =
     await createProjectSchema.parseAsync(dto);
+
+  const alreadyExistProject = await prisma.project.findFirst({
+    where: {
+      name,
+      ownerId: session.user.id,
+    },
+    select: { id: true },
+  });
+
+  if (alreadyExistProject) {
+    throw new ConflictError("name");
+  }
 
   await prisma.project.create({
     data: {
