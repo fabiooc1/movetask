@@ -67,8 +67,10 @@ export async function getUserProjects(
               select: {
                 id: true,
                 name: true,
+                image: true,
               },
             },
+            joinedAt: true,
           },
         },
         tasks: {
