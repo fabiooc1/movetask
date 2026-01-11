@@ -86,7 +86,8 @@ export async function getUserProjects(
 
   const mappedProjects = projects.map((project) => ({
     ...project,
-    tasksAmount: project.tasks.length,
+    tasksPendingAmount: project.tasks.filter((task) => !task.isCompleted)
+      .length,
     tasksCompletedAmount: project.tasks.filter((task) => task.isCompleted)
       .length,
   }));
