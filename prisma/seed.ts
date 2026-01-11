@@ -33,6 +33,25 @@ const taskStatus = [
   },
 ];
 
+const tasksPriorities = [
+  {
+    id: 1,
+    level: "Baixa",
+  },
+  {
+    id: 2,
+    level: "Média",
+  },
+  {
+    id: 3,
+    level: "Alta",
+  },
+  {
+    id: 4,
+    level: "Urgente",
+  },
+];
+
 async function main() {
   for (const status of taskStatus) {
     try {
@@ -45,6 +64,20 @@ async function main() {
       });
     } catch (error) {
       console.error("ERROR SEEDING STATUS:", status.name, error);
+    }
+  }
+
+  for (const priority of tasksPriorities) {
+    try {
+      console.log("SEEDING PRIORITY:", priority.level);
+
+      await prisma.taskPriority.upsert({
+        where: { id: priority.id },
+        update: {},
+        create: priority,
+      });
+    } catch (error) {
+      console.error("ERROR SEEDING PRIORITY:", priority.level, error);
     }
   }
 }
