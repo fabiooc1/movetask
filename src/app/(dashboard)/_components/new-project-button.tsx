@@ -1,39 +1,41 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { DialogDescription } from "@radix-ui/react-dialog";
 import { PlusIcon } from "lucide-react";
 import { NewProjectForm } from "./new-project-form";
 import { useState } from "react";
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
 
 export function NewProjectButton() {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
+    <Sheet open={isOpen} onOpenChange={setIsOpen}>
+      <SheetTrigger asChild>
         <Button>
           <PlusIcon /> Novo projeto
         </Button>
-      </DialogTrigger>
+      </SheetTrigger>
 
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Novo Projeto</DialogTitle>
-          <DialogDescription>
+      <SheetContent>
+        <SheetHeader>
+          <SheetTitle>Novo Projeto</SheetTitle>
+          <SheetDescription>
             Crie um novo projeto para organizar suas tarefas
-          </DialogDescription>
-        </DialogHeader>
+          </SheetDescription>
+        </SheetHeader>
 
-        <NewProjectForm onSuccess={() => setIsOpen(false)} />
-      </DialogContent>
-    </Dialog>
+        <div className="px-4">
+          <NewProjectForm onSuccess={() => setIsOpen(false)} />
+        </div>
+      </SheetContent>
+    </Sheet>
   );
 }
