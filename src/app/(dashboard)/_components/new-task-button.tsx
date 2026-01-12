@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { PlusIcon } from "lucide-react";
 import { NewTaskForm } from "./new-task-form";
+import { useState } from "react";
 
 interface NewTaskButtonProps {
   projectId: number;
@@ -23,8 +24,10 @@ export function NewTaskButton({
   statusId,
   buttonLayout = "text",
 }: NewTaskButtonProps) {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
           variant={buttonLayout === "text" ? "default" : "ghost"}
@@ -48,7 +51,11 @@ export function NewTaskButton({
           </DialogDescription>
         </DialogHeader>
 
-        <NewTaskForm projectId={projectId} statusId={statusId} />
+        <NewTaskForm
+          projectId={projectId}
+          statusId={statusId}
+          onSuccess={() => setIsOpen(false)}
+        />
       </DialogContent>
     </Dialog>
   );
