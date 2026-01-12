@@ -105,14 +105,14 @@ model Task {
   priorityId Int
   priority   TaskPriority @relation(fields: [priorityId], references: [id])
 
-  taskStatusId Int
-  status       TaskStatus @relation(fields: [taskStatusId], references: [id])
+  statusId Int
+  status   TaskStatus @relation(fields: [statusId], references: [id])
 
-  createdByUserId String
-  createdBy       User   @relation(fields: [createdByUserId], references: [id])
+  createdById String
+  createdBy   User   @relation(fields: [createdById], references: [id])
 
-  assignedToUserId String?
-  assignedTo       User?   @relation("AssignedTasks", fields: [assignedToUserId], references: [id])
+  assignedToId String?
+  assignedTo   User?   @relation("AssignedTasks", fields: [assignedToId], references: [id])
 
   deliveryDate DateTime?
 
