@@ -17,6 +17,11 @@ import { TaskPrioritySelect } from "../task-priority-select";
 import { Button } from "@/components/ui/button";
 import { TaskMemberSelect } from "../task-member-select";
 import { TaskStatusSelect } from "../task-status-select";
+import { createTaskAction } from "@/actions/tasks/create-task";
+import { ConflictError } from "@/actions/erros/ConflictError";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
 
 interface NewTaskFormProps {
   projectId: number;
@@ -29,6 +34,8 @@ export function NewTaskForm({
   statusId,
   onSuccess,
 }: NewTaskFormProps) {
+  const [isPending, setIsPending] = useState(false);
+
   const form = useForm<NewTaskFormValues>({
     resolver: zodResolver(newTaskFormSchema),
     defaultValues: {
@@ -41,11 +48,34 @@ export function NewTaskForm({
     },
   });
 
-  async function handleOnNewTaskSubmit(data: NewTaskFormValues) {
+  async function handleOnNewTaskSubmit(values: NewTaskFormValues) {
     try {
-      await createTaskAction();
+      setIsPending(true);
+
+      await createTaskAction({
+        projectId,
+        title: values.title,
+        description: values.description,
+        statusId: Number(values.statusIdValue),
+        assignedToId: values.assignedToIdValue,
+        priorityId: Number(values.priorityIdValue),
+        deliveryDate: values.deliveryDate,
+      });
+
       onSuccess?.();
-    } catch {}
+    } catch (error) {
+      if (error instanceof ConflictError) {
+        form.setError("title", {
+          message: "Esse projeto já possui uma tarefa com esse título.",
+        });
+
+        return;
+      }
+
+      toast.error("Erro ao criar a tarefa. Tente novamente.");
+    } finally {
+      setIsPending(false);
+    }
   }
 
   return (
@@ -155,7 +185,10 @@ export function NewTaskForm({
       </Form>
 
       <div className="flex justify-end">
-        <Button type="submit">Criar tarefa</Button>
+        <Button type="submit" disabled={isPending}>
+          {isPending && <Loader2 className="animate-spin" />}
+          Criar tarefa
+        </Button>
       </div>
     </form>
   );
